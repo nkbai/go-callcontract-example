@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"strings"
 
+	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -41,18 +42,29 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
-	token, err := mytoken.NewMyToken(common.HexToAddress("0x5e300171d7dc10e43f959877dba98a44df5d1466"), conn)
+	token, err := mytoken.NewMyToken(common.HexToAddress("0xa9b61a3cc7cc1810e133174caa7ead7ef909d701"), conn)
 	if err != nil {
 		log.Fatalf("Failed to instantiate a Token contract: %v", err)
 	}
+	toAddress := common.HexToAddress("0x8c1b2e9e838e2bf510ec7ff49cc607b718ce8401")
+	val, _ := token.BalanceOf(nil, toAddress)
+	fmt.Printf("before transfer :%s\n", val)
 	// Create an authorized transactor and spend 1 unicorn
 	auth, err := bind.NewTransactor(strings.NewReader(key), "123")
 	if err != nil {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
-	tx, err := token.Transfer(auth, common.HexToAddress("0x8c1b2e9e838e2bf510ec7ff49cc607b718ce8401"), big.NewInt(387))
+	tx, err := token.Transfer(auth, toAddress, big.NewInt(387))
 	if err != nil {
 		log.Fatalf("Failed to request token transfer: %v", err)
 	}
-	fmt.Printf("Transfer pending: 0x%x\n", tx.Hash())
+	ctx := context.Background()
+	receipt, err := bind.WaitMined(ctx, conn, tx)
+	if err != nil {
+		log.Fatalf("tx mining error:%v\n", err)
+	}
+	val, _ = token.BalanceOf(nil, toAddress)
+	fmt.Printf("after transfere:%s\n", val)
+	fmt.Printf("tx is :%s\n", tx)
+	fmt.Printf("receipt is :%s\n", receipt)
 }

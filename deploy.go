@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"bytes"
+	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"token-contract/mytoken"
@@ -53,10 +55,17 @@ func main() {
 	}
 	fmt.Printf("Contract pending deploy: 0x%x\n", address)
 	fmt.Printf("Transaction waiting to be mined: 0x%x\n\n", tx.Hash())
-
-	// Don't even wait, check its presence in the local pending state
-	time.Sleep(1250 * time.Millisecond) // Allow it to be processed by the local node :P
-
+	startTime := time.Now()
+	fmt.Printf("TX start @:%s", time.Now())
+	ctx := context.Background()
+	addressAfterMined, err := bind.WaitDeployed(ctx, conn, tx)
+	if err != nil {
+		log.Fatalf("failed to deploy contact when mining :%v", err)
+	}
+	fmt.Printf("tx mining take time:%s\n", time.Now().Sub(startTime))
+	if bytes.Compare(address.Bytes(), addressAfterMined.Bytes()) != 0 {
+		log.Fatalf("mined address :%s,before mined address:%s", addressAfterMined, address)
+	}
 	name, err := token.Name(&bind.CallOpts{Pending: true})
 	if err != nil {
 		log.Fatalf("Failed to retrieve pending name: %v", err)
@@ -65,13 +74,11 @@ func main() {
 }
 
 /*
-"C:\Program Files\JetBrains\Gogland 171.4424.55\bin\runnerw.exe" C:/Go\bin\go.exe run D:/gotest/beego/src/token-contract/deploy.go
-Contract pending deploy: 0x5e300171d7dc10e43f959877dba98a44df5d1466
-Transaction waiting to be mined: 0xd49257ac92cff3c68f7e62604cb92edd585030f2973f6b8e389319aa98540f31
+Contract pending deploy: 0xa9b61a3cc7cc1810e133174caa7ead7ef909d701
+Transaction waiting to be mined: 0xf832802f6f262677f02eca761ffe65ae21bbe41e983ceeb6cf645166073f4eb5
 
-2017/09/03 10:12:27 Failed to retrieve pending name: no contract code at given address
-exit status 1
+TX start @:2017-09-04 11:13:57.217 +0800 CSTtx mining take time:34.009s
+Pending name: Contracts in Go!!!
 
-Process finished with exit code 1
 
 */

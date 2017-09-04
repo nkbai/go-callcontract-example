@@ -1,5 +1,3 @@
-contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
-
 contract MyToken {
     /* Public variables of the token */
     string public name;
@@ -13,6 +11,7 @@ contract MyToken {
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
+    event ReceiveApproval(address _from, uint256 _value, address _token, bytes _extraData);
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function MyToken(uint256 initialSupply, string tokenName, uint8 decimalUnits, string tokenSymbol) {
@@ -35,8 +34,7 @@ contract MyToken {
 
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
         allowance[msg.sender][_spender] = _value;
-        tokenRecipient spender = tokenRecipient(_spender);
-        spender.receiveApproval(msg.sender, _value, this, _extraData);
+        ReceiveApproval(msg.sender, _value, this, _extraData);
     }
 
     /* A contract attempts to get the coins */
