@@ -11,7 +11,7 @@ import (
 	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"token-contract/mytoken"
+	"go-callcontract-example/mytoken"
 )
 
 const key = `

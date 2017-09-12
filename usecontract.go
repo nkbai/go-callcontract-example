@@ -10,7 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"token-contract/mytoken"
+	"go-callcontract-example/mytoken"
 )
 
 const key = `
@@ -42,7 +42,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
-	token, err := mytoken.NewMyToken(common.HexToAddress("0xa9b61a3cc7cc1810e133174caa7ead7ef909d701"), conn)
+	token, err := mytoken.NewMyToken(common.HexToAddress("0xbb4cc62817e59c68bd00e595add7e7f5b2ffacf9"), conn)
 	if err != nil {
 		log.Fatalf("Failed to instantiate a Token contract: %v", err)
 	}

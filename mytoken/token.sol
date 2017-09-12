@@ -11,6 +11,8 @@ contract MyToken {
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
+    event StringArg(string indexed s);
+    event IntArg(int8 indexed i8,int64 indexed i64);
     event ReceiveApproval(address _from, uint256 _value, address _token, bytes _extraData);
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
@@ -22,12 +24,14 @@ contract MyToken {
     }
 
     /* Send coins */
-    function transfer(address _to, uint256 _value) {
+    function transfer(address _to, uint64 _value) {
         if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
         if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
+        StringArg("test");
+        IntArg(int8(_value),int64(_value));
     }
 
     /* Allow another contract to spend some tokens in your behalf */
