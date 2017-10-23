@@ -70,7 +70,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to retrieve pending name: %v", err)
 	}
-	fmt.Println("Pending name: ", name)
+	fmt.Println("Pending name:", name)
 }
 
 /*
